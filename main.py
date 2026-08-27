@@ -1,42 +1,30 @@
 import json
-import requests
-
-FOREX_FACTORY_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
-
-
-def get_calendar_data():
-    print("Connecting to ForexFactory calendar...")
-
-    response = requests.get(
-        FOREX_FACTORY_URL,
-        timeout=15
-    )
-
-    response.raise_for_status()
-
-    calendar_data = response.json()
-
-    return calendar_data
+from scraper import get_clean_calendar_data
 
 
 def main():
     try:
-        calendar_data = get_calendar_data()
+        print("Downloading ForexFactory calendar data...")
 
-        print("Connection successful!")
-        print(f"Events received: {len(calendar_data)}")
+        calendar_data = get_clean_calendar_data()
 
-        print("\nFirst event:")
-        print(json.dumps(calendar_data[0], indent=2))
+        print("Calendar data received successfully!")
+        print(f"Total events: {len(calendar_data)}")
 
-    except requests.RequestException as error:
-        print(f"Connection error: {error}")
+        print("\nFirst clean event:")
 
-    except ValueError as error:
-        print(f"JSON error: {error}")
+        if calendar_data:
+            print(
+                json.dumps(
+                    calendar_data[0],
+                    indent=2
+                )
+            )
+        else:
+            print("No events were received.")
 
-    except IndexError:
-        print("No calendar events were received.")
+    except Exception as error:
+        print(f"Error: {error}")
 
 
 if __name__ == "__main__":
