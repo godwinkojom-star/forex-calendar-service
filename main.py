@@ -1,52 +1,29 @@
-import os
-
-from flask import Flask, jsonify
+from fastapi import FastAPI
 from scraper import get_clean_calendar_data
 
+app = FastAPI()
 
-app = Flask(__name__)
 
-
-@app.route("/")
+@app.get("/")
 def home():
-    return jsonify({
-        "service": "Forex Calendar Service",
-        "status": "online"
-    })
+    return {
+        "status": "SmartFX Forex Calendar Service is running"
+    }
 
 
-@app.route("/health")
-def health():
-    return jsonify({
-        "status": "healthy"
-    })
-
-
-@app.route("/calendar")
-def calendar():
+@app.get("/calendar")
+def get_calendar():
     try:
         calendar_data = get_clean_calendar_data()
 
-        return jsonify({
+        return {
             "success": True,
             "total_events": len(calendar_data),
             "events": calendar_data
-        })
+        }
 
     except Exception as error:
-        return jsonify({
+        return {
             "success": False,
             "error": str(error)
-        }), 500
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-
-    print("Starting Forex Calendar Service...")
-    print(f"Listening on port {port}")
-
-    app.run(
-        host="0.0.0.0",
-        port=port
-    )
+        }
